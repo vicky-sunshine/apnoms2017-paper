@@ -240,12 +240,23 @@ To gather per-session statistical information, 5-tuple rules are required. There
 
 
 \subsection{QoS}
-QoS is mainly used for traffic control. Two management functions are provided for QoS. We first introduce three strategies and then discuss the flow table order of QoS in the multiple table model.
+Quality of Service (QoS) is always used to prevent the network congestion and make sure all of applications are functioning properly. Therefore, we provide two management functions with QoS for the transport of traffic with special requirements. Then we will introduce two strategies of QoS and discuss the order of QoS in the multiple table model.
 
 \subsubsection{Rate Limitation of Hosts}
-When some hosts utilize a high network bandwidth, the speed for other hosts slows or traffic congestion occurs. To prevent these effects, rate limiting is used to control the rate of traffic from a host. For implementing the host rate limitation, we first create a meter for the desired bandwidth and then add a flow, of which the match is the host’s MAC address and the action is the meter.
+When some hosts utilize a high bandwidth of network, it will occur the traffic congestion probably.
+As a result, we are providing the rate limitation for hosts to pervent this.
+To implement the rate limiting for hosts, we use meter, which is defined within OpenFlow protocol 1.3, to set the limitation in the specific bandwidth.
+Therefore, we will create a meter for a desired bandwidth and assign the flows of target host with it.
 
-This method is illustrated in \ref{fig:mft_qos_rate_host}. In T0, host 1 and host 2 are not limited yet. Because host 2 utilizes a substantial amount of bandwidth from the network in T0–T1  the network administrator sets the host 2 rate limit to 400 Kbps. When the controller receives this request, marked as (a), it creates a meter with meter id = 1 and bandwidth = 400 Kbps and sets the rule in the flow table with the destination MAC address = MAC address of host 1 and meter = 1. According to our new flow table, it limits the rate of the target host. Then, the traffic from host 2 is reduced and immediately limited to 400 Kbps. A similar situation occurs for host 1 in T2. The administrator chooses to set host 1 under 600 Kbps, marked as (b), and then the traffic from host 1 is limited to 600 Kbps.
+This method is illustrated in Fig. \ref{fig:mft_qos_rate_host}.
+When host 2 utilizes a substantial amount of bandwidth from the network in T1, the network administrator decides to set the rate limitation of host 2 to 400 Kbps.
+When the controller receives this request, marked as (a), it creates a meter with meter id = 1 and bandwidth = 400 Kbps.
+Then controller will add the rule with the destination MAC address = MAC address of host 2 and meter = 1.
+
+After the limitation, the rate of host 2 will reduce and be limited to 400 Kbps immediately.
+A similar situation occurs to host 1 in T2.
+The administrator decide to set the rate of host 1 in 600 Kbps, marked as (b).
+Then the traffic from host 1 is limited to 600 Kbps as expected.
 
 \begin{figure}[!t]
 \centering
@@ -256,11 +267,23 @@ This method is illustrated in \ref{fig:mft_qos_rate_host}. In T0, host 1 and hos
 
 \subsubsection{Rate Limitation of Applications}
 
-An increasing number of network applications such as online games, video streaming, and conference calls are used. Therefore, substantial traffic exists in the network. Consequently, we integrated a flow classification engine to identify which application the flow belongs to. The integration scenario is presented in Fig. \ref{fig:class_classifying}.
+There are more and more network applications such as online games, video streaming, and conference calls are used.
+However, it should make sure the important applications are functioning properly.
+Consequently, we integrated a flow classification engine to identify the flow belongs to which application.
 
-To rate the limit for a certain application, we must first gather per-flow statistical information. When a connection is created, the first packet of the connection is handled by the forwarding service and the 5-tuple rules are added into the SDN switch to obtain the bandwidth information of the per-flow connection (see Section \ref{ssec:forwarding} for details). With the classified result of application identification, the application type of each connection can be determined.
+To avoid some applications take up a lot of bandwidth, we can limit the bandwidth for a certain application.
+We will mirror the packet to flow classification engin and identify which application belongs to.
+If we want to limit specific application, we just add a 5-tuple rule and meter to those packets which belong to this application.
+Then the controller will set those flows into the same meter and they will share the bandwidth by this meter.
 
-When the network administrator requests to rate limit a certain application to a certain bandwidth, the bandwidth is equally distributed to each connection of the application. The controller sets all flows that belong to the same application into the same meter, and the bandwidth of the meter is modified to achieve the desired value. For example, suppose that we can determine which flows belong to an application through the flow classification engine. This application is to be limited to 1000 Kbps. In T0 (Fig. \ref{fig:mft_qos_rate_app}), three connections belong to this application, and the bandwidth of the meter to each link is set as 333 (1000/3) Kbps. In T2, two connections are added to this application, and the bandwidth of the meter to each link is reset as 200 (1000/5) Kbps. In T2, one connection is obtained in this application, and hence, the bandwidth of the meter to each link is reset as 250 (1000/4) Kbps. However, the sum of bandwidth from this application should always be 1000 Kbps. In other words, the bandwidth is dynamically adjusted.
+This method is illustrated in Fig. \ref{fig:mft_qos_rate_app}.
+When the network administrator decides to limit a specific application to a certain bandwidth, the controller will limit all packets of this application with 5-tuple rule.
+For example, we want to limited specific application to 1000 Kbps and use flow classification enginedetermine to determine which flows belong to this application
+
+In T0, there are three connections belong to this application, and we will set those connections to the same meter with 5-tuple rule.
+In T1, there are more two connections are added to this application, and we will also set those new connections to the same meter with 5-tuple rule.
+In T2, there is a connection stop from this application. Therefore, the bandwidth will be shared by other rest of the connection.
+However, the sum of bandwidth from this application is always 1000 Kbps.
 
 It is worth noting that we did not change any rules in flow table; we merely change the bandwidth of the correspond meter in the meter table to reduce the overhead of switch and controller.
 
@@ -303,14 +326,18 @@ Because the NAT service is required to set the packet header field and a small p
 
 \subsection{Evaluation of QoS When Host Bandwidth Is Limited}
 
-We verify our function by downloading a file, because downloading is a situation that always consumes network resources in practice. We downloaded an image of Ubuntu 14.04 that was approximately 1 GB in size.
+We verify our function by downloading a file, because downloading is a situation that always consumes network resources in practice.
+We downloaded an image of Ubuntu 14.04 that was approximately 1 GB in size.
 
+The NFV controller ran on the Dell PowerEdge R630 rack server and executed QoS.
+The Edge-Core AS5712-54X \cite{edge-core-switch} switch was used as the OpenFlow-enabled switch with the PicOS TM r2.6 operating system.
+We used a desktop computer as the experimental host to record the bandwidth every 2 seconds.
 
-The NFV controller ran on the Dell PowerEdge R630 rack server and executed QoS (Fig. \ref{fig:class_classifying}). The Edge-Core AS5712-54X \cite{edge-core-switch} switch was used as the OpenFlow-enabled switch with the PicOS TM r2.6 operating system.
-
-We used a desktop computer as the experimental host to record the bandwidth every 2 s. As shown in Fig 13, we started downloading the file without rate limiting; the rate was between 190 000 and 410 000 Kbps initially. At the \nth{10} second, we limited the host bandwidth to 1024 Kbps and added the rule matching the destination MAC address with a meter of 1024 Kbps. Then, we determined that the bandwidth from this host decreased and was limited to approximately 1024 Kbps immediately.
-
-At the \nth{36} second, we canceled the limit to this host. In other words, we removed the meter field from the rule in the flow table. We observed that the bandwidth of the download from this host rapidly increased without rate limiting.
+As shown in Fig. \ref{fig:qos_limit_host}, we started downloading the file without rate limiting and the rate was between 40,000 and 70,000 Kbps.
+At the \nth{8} second, we limited the host 1 to 2048 Kbps and host 2 to 1024 Kbps by adding the rule of their MAC address.
+Then the bandwidth from host 1 and host 2 is decreasing. Host 1 and host 2 were limited to approximately 2048 Kbps and 1024 Kbps, respectively.
+At the \nth{42} second, we change the bandwidth to host 2. That is, we set the bandwidth to host 2 from 1024 Kbps to 5120 Kbps.
+We observed that the bandwidth of the host 2 rapidly increased to 5120 Kbps.
 
 \begin{figure}[!t]
 \centering
@@ -322,21 +349,25 @@ At the \nth{36} second, we canceled the limit to this host. In other words, we r
 \begin{figure}[!t]
 \centering
 \includegraphics[width=3in]{./figures/mft_qos_rate_domain_app}
-\caption{Limit the rate of Youtube in a network domain.}
+\caption{Limit the rate of Filezilla in a network domain.}
 \label{fig:mft_qos_rate_domain_app}
 \end{figure}
 
 \subsection{Evaluation of QoS When Application Bandwidth Is Limited}
-Currently, numerous people use streaming applications, which consume a high amount of network resources. We employed application identification to determine the application to which each flow belongs.
+In our experimental environment, we mirror all traffic from the SDN switch to application identification system and identify those flows belong to which application.
+Then the application identification system uploaded the identification results to the database.
+Subsequently, the controller received the results from the database and updated the flow information of the applications.
+Therefore, we could use the flow information (5-tuple and identification results) to limit the application bandwidth.
 
-In our experimental environment (Fig. \ref{fig:class_classifying}), we used a mirror switch to replicate all traffic from the SDN switch and to enable the application identification system to classify the flows according to the applications they belong to. The application identification system uploaded the identification results to the database.
+We selected Filezilla to verify our function for limiting applications and there are two hosts (host 1 and host 2) in the same network domain.
+Then we limited the bandwidth of Filezilla in this network domain. That is, the sum of bandwidths from host 1 and host 2.
 
-
-Subsequently, the controller received the results from the database and updated the flow information of the applications. Therefore, we could use the flow information (5-tuple and identification results) to limit the application bandwidth.
-
-We selected YouTube to verify our function for limiting applications and used three hosts (host 1, host 2, and host 3) in the same network domain. Then, we limited the bandwidth of YouTube in this network domain (i.e., the sum of bandwidths of host 1, host 2, and host 3).
-
-Initially, without limitation, the total bandwidth of this network was approximately 3000 to 4000 Kbps (Fig. \ref{fig:mft_qos_rate_domain_app}). At the \nth{8} second, we limited the total bandwidth from YouTube to 2048 Kbps. We observed that the total traffic from YouTube in this network domain immediately decreased. Clearly, the total traffic from YouTube did not exceed the set bandwidth (2048 Kbps) because we limited YouTube in this network domain.
+As shown in Fig. \ref{fig:mft_qos_rate_domain_app}.
+Initially, without limitation, the total bandwidth of Filezilla was approximately 140000 Kbps.
+At the \nth{6} second, we limited the total bandwidth from Filezilla to 4096 Kbps.
+Then we observed that the total traffic from Filezilla in this network domain immediately decreased.
+Clearly, the total traffic from Filezilla was approximately 4096 Kbps.
+At the \nth{38} second, we change the limitation from 4096 Kbps to 8192 Kbps and the total traffic from Filezilla increase to 8192 Kbps as expected.
 
 Using this function for limiting applications, we can guarantee that the traffic in a network domain does not exceed the network capacity, thus preventing traffic congestion.
 
