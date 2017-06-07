@@ -300,14 +300,12 @@ Then the controller will set those flows into the same meter and they will share
 
 This method is illustrated in Fig. \ref{fig:mft_qos_rate_app}.
 When the network administrator decides to limit a specific application to a certain bandwidth, the controller will limit all packets of this application with 5-tuple rule.
-For example, we want to limited specific application to 1000 Kbps and use flow classification enginedetermine to determine which flows belong to this application
+For example, we want to limited specific application to 1000 Kbps and use flow classification enginedetermine to determine which flows belong to this application. 
 
 In T0, there are three connections belong to this application, and we will set those connections to the same meter with 5-tuple rule.
 In T1, there are more two connections are added to this application, and we will also set those new connections to the same meter with 5-tuple rule.
 In T2, there is a connection stop from this application. Therefore, the bandwidth will be shared by other rest of the connection.
 However, the sum of bandwidth from this application is always 1000 Kbps.
-
-It is worth noting that we did not change any rules in flow table; we merely change the bandwidth of the correspond meter in the meter table to reduce the overhead of switch and controller.
 
 \begin{figure}[!t]
 \centering
