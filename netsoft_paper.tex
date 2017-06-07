@@ -51,7 +51,29 @@ Software defined network, network function virtualization, NFV orchestration, vi
 % Introduction
 % First paragraph of paper need be big Alhabet
 \section{Introduction}
-\section{Related Work}
+In recent times, researchers have shown an increasing interest in evolving network infrastructures.
+Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this evolution.
+SDN \cite{sdn-mckeown-2009-talk, sdn-newnorm, sdn-road, sdn-compre-survey} has been widely studied for almost a decade since the first OpenFlow \cite{openflow-mckeown-2008, openflow-spec} article had be presented in 2008.
+The main concept of SDN is separating data plane and control plane to enable smart control on switch and give a brand-new viewpoint on network research, and makes innovation on industries.
+
+As SDN was developed, NFV \cite{nfv-wp, etsi-nfv-archi, nfv-survey} has been introduced by Telco operators at the same time.
+The network services offered by operators previously performed by specific hardware appliances and it is difficult to decrease the OPEX and CAPEX on service deployment and management.
+In this context, NFV is proposed to innovate in the service delivery arena.
+The concept of NFV is to reduce the coupling between network functions (NFs) and hardware devices.
+Virtual Customer Premise Equipment (vCPE) \cite{nec-vcpe, vcpe-enhance}, in particular virtual residential gateway (vRGW) \cite{nfv-home}, is one of the network services which benefited from NFV \cite{etsi-nfv-usecase}.
+
+In the progress of vCPE development, the SDN is not involved at first.
+Most of previous researches focused on other technology to virtualize and deploy the CPE node \cite{virtual-rg, security-vgw, design-vrgw, nfv-hgw-surrogate, linux-cpe, nfv-resoure-contrain-cpe}.
+Cloud4NFV \cite{cloud4nfv, cloud4nfv-telco}, proposed by Portugal Telecom, started to use SDN technology on designing virtual CPE management and organization (MANO) platform for Telco cloud.
+Italy Telecom also proposed NetFATE \cite{netfate}, which is a network function deploy-to-edge model in which the NFs are designed by SDN and perform by SDN switch. Inspired from these two frameworks, we proposed a vCPE framework and a few network functions, attempting to replace hardware-based CPE.
+When the NFV is deployed at network edge and performed by SDN switch, there will be restriction on the OpenFlow Table \cite{multiple-flow-table}.
+In this paper, we also proposed a multiple OpenFlow table mechanism to implement network functions and explain how to use it to resolve the table restriction.
+We also evaluate the new VNF implemented by the proposed mechanism, and compare with the single-table mechanism.
+This new VNF can also be deployed to the network edge by the our vCPE framework.
+
+This paper is structured as follows. Section 2 briefly introduces our proposed vCPE framework.
+In Section 3, we move on describing our proposed multiple flow table management mechanism, which achieved vRGW functions.
+Section 4 turns to analyze the performance of vCPE network function what we proposed and compare to single table NF, followed by Conclusion and proposed future works in the last section.
 
 \section{System Description}
 \subsection{Overview of Network Functions} \label{ssec:desc_nfv_overview}
@@ -64,14 +86,6 @@ An NFV is a VNF controller, mainly used for addressing stateful processing and N
 \caption{Overview of network functions.}
 \label{fig:desc_nfv_overview}
 \end{figure}
-
-\subsubsection{Stateful Processing Component (VNF Controller in VM or Container)}
-This component is used to control the workflow, maintain the state associated with the VNF, and provide an interface for service providers or customers to configure and update the behavior of the stateless datapath processing component. We used an SDN controller to implement the VNF controller; and notably, we use southbound APIs of the SDN controller framework to manage the interface between the stateful and stateless components with the OpenFlow protocol, which was originally designed for this purpose.
-
-\subsubsection{Stateless Processing Component (SDN Datapath)}
-Stateless processing component is implemented by SDN datapath resources and is optimized for data plane traffic processing. Because an SDN switch can be decoupled with control plane and data plane, the switch can accept the control messages from the stateful processing component.
-
-By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources. If we want to update our service, we are required to update only the stateful component, because the stateless component merely follows the commands from the stateful component.
 
 \subsection{Service Deployment Model}
 Unlike a related study that explored the virtualization of network function in PE devices \cite{vcpe-enhance}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the architecture of the model is presented in Fig. \ref{fig:desc_nfv_overview}. Because computing infrastructures involves algorithms and policies and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different network function service by subscribing to a different VNF controller through our vCPE platform.
@@ -300,7 +314,7 @@ Then the controller will set those flows into the same meter and they will share
 
 This method is illustrated in Fig. \ref{fig:mft_qos_rate_app}.
 When the network administrator decides to limit a specific application to a certain bandwidth, the controller will limit all packets of this application with 5-tuple rule.
-For example, we want to limited specific application to 1000 Kbps and use flow classification enginedetermine to determine which flows belong to this application. 
+For example, we want to limited specific application to 1000 Kbps and use flow classification enginedetermine to determine which flows belong to this application.
 
 In T0, there are three connections belong to this application, and we will set those connections to the same meter with 5-tuple rule.
 In T1, there are more two connections are added to this application, and we will also set those new connections to the same meter with 5-tuple rule.
