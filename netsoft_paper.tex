@@ -139,7 +139,7 @@ Service control is used to enable or disable services. To enable a service, the 
 To disable a service, we must not only modify the table-miss rule but also add an enforce rule. Each enforce rule has maximum priority with the action, ``go to next flow table''. It indicates that packets still pass through the disabled service’s table, but ignore other rules and proceed to the next flow table.
 
 \subsection{Firewall}
-The firewall service can dynamically block traffic and prevent the packets from causing a packet-in event.
+The firewall service can dynamically block traffic.
 
 On the dashboard, we can specify the blocking policies. There are 3 kinds of policies:
 \begin{itemize}[\IEEEsetlabelwidth{Z}]
@@ -148,11 +148,15 @@ On the dashboard, we can specify the blocking policies. There are 3 kinds of pol
 \item block traffic to customize layer 4 ports of a host.
 \end{itemize}
 
-For different policies, the controller applies corresponding rules to the SDN switch. After the policies are set, the blocking rules are immediately installed. Subsequently, any traffic that satisfies the blocking criteria is dropped. Normal traffic is unaffected.
+For different policies, the controller applies corresponding rules to the SDN switch.
+After the policies are set, the blocking rules are immediately installed.
+Subsequently, any traffic that satisfies the blocking criteria is dropped.
+Normal traffic is unaffected.
 
 As shown in Table \ref{table:fw}, all the actions of flow entries are dropped. The first rule illustrates that SSH connection with the source IP address 192.168.2.1 is blocked. The second rule indicates that the flow entry blocks the Telnet protocol.
 
-In our multiple flow table model, the firewall service is located in flow table 1 because once packets are detected by the blocking rules, they do not need to be applied to any other services. The packets that satisfy the blocking rules are immediately dropped, and their journey in the flow table ends. The other unblocked packets pass all blocking rules and finally satisfy the table-miss rule, which allows the packets to proceed to the next flow table. The action of the firewall is different from those of other services, because in other services, irrespective of the actions taken with the packets, the packets must proceed to the next flow table.
+In our multiple flow table model, the firewall service is located in flow table 1 because once packets are detected by the blocking rules, they do not need to be applied to any other services.
+The action of the firewall is different from those of other services, because in other services, irrespective of the actions taken with the packets, the packets must proceed to the next flow table.
 
 % firewall example table
 \begin{table*}[!t]
@@ -175,15 +179,27 @@ TCP      & *           & *            & *        & 23       & drop   \\ \hline
 
 
 \subsection{NAT}
-The NAT service allows numerous hosts to use one public IP address for connecting to the network. To achieve this, the SDN controller must set the packet header field. Because the SDN switch sets the field, the first packet must proceed to the controller. When the controller adds the flow to the SDN switch, the packet does not proceed to the controller. This can reduce the burden on the controller.
+The NAT service allows numerous hosts to use one public IP address for connecting to the network.
+To achieve this, the SDN controller must set the packet header field.
+Because the SDN switch sets the field, the first packet must proceed to the controller.
+When the controller adds the flow to the SDN switch, the packet does not proceed to the controller.
+This can reduce the burden on the controller.
 
-Following is an example that illustrates the modification of the IP address and port number by using the NAT service. For an outgoing packet, the SDN switch does not have any flow entry in the flow table, and hence, a packet-in event is triggered initially. The packet that is sent by a private network host is sent to the SDN controller, and the packet header fields are modified using the set-field action. The source IP address and source port number of the outgoing packet are modified to a public IP address and a new port number is remapped for NAT. For the incoming packet, the destination IP address and destination port number are modified to fit the private IP address and port number. Subsequently, the SDN controller adds these flow entries to the SDN switch; all packets must be sent to the controller
+Following is an example that illustrates the modification of the IP address and port number by using the NAT service.
+For an outgoing packet, the SDN switch does not have any flow entry in the flow table, and hence, a packet-in event is triggered initially.
+The source IP address and source port number of the outgoing packet are modified to a public IP address and a new port number is remapped for NAT service by Set-Field action.
+For the incoming packet, the destination IP address and destination port number are modified to fit the private IP address and port number.
+Subsequently, the SDN controller adds these flow entries to the SDN switch.
 
 In Fig. \ref{fig:mft_nat}, the public IP address of NAT is 140.114.71.178, and the host private IP address is 192.168.8.254 with the port number 7878. The client sent the packet to a server with the IP address 140.114.71.177 and port number 9898.
 
-As shown in Table \ref{table:nat}, when the host sends the packet to the server (outgoing), a packet-in event is triggered, and the packet is sent to the controller. The set-field action modifies the source IP address to a public IP address of NAT, 140.114.71.178, and the source port to 2000. When the server sends the packet back to the client (incoming), the packet header field is modified. The destination IP address and destination port number are modified to 192.168.8.254 and 7788, respectively.
+% As shown in Table \ref{table:nat}, when the host sends the packet to the server (outgoing), a packet-in event is triggered, and the packet is sent to the controller. The set-field action modifies the source IP address to a public IP address of NAT, 140.114.71.178, and the source port to 2000. When the server sends the packet back to the client (incoming), the packet header field is modified. The destination IP address and destination port number are modified to 192.168.8.254 and 7788, respectively.
 
-In the single flow table framework, two rules must be added to the SDN switch to match the outgoing and incoming situations. First, we predicted that the NAT service must be placed in the last table of the multiple flow table framework because the NAT service must set the packet header fields and enable connection to the outside network. Most importantly, the SDN switch is placed according to the order of tables to match the field. The outgoing and incoming situations must be considered. In consideration of all the aforementioned factors, we place the NAT service in the first and last tables in our multiple flow table framework.
+In the single flow table framework, two rules must be added to the SDN switch to match the outgoing and incoming situations.
+First, we predicted that the NAT service must be placed in the last table of the multiple flow table framework because the NAT service must set the packet header fields and enable connection to the outside network.
+Most importantly, the SDN switch is placed according to the order of tables to match the field.
+The outgoing and incoming situations must be considered.
+In consideration of all the aforementioned factors, we place the NAT service in the first and last tables in our multiple flow table framework.
 
 \begin{figure}[!t]
 \centering
@@ -191,24 +207,28 @@ In the single flow table framework, two rules must be added to the SDN switch to
 \caption{Example of modification of IP address and port number by NAT service.}
 \label{fig:mft_nat}
 \end{figure}
-
-% NAT example table
-\begin{table*}[!t]
-\caption{Flow entry for modifying the packet header fields}
-\label{table:nat}
-\centering
-\begin{tabular}{|l|l|l|l|l|l|}
-\hline
-            &IP src          & IP dst          & L4 src port  & L4 dst port & action                                                                            \\ \hline
-1. outgoing &192.168.8.254   &140.114.71.177   & 7878         & 9898        & \begin{tabular}[c]{@{}l@{}}IP src $\,\to\,$ 140.114.71.178; \\ L4 src port $\,\to\,$ 2000\end{tabular} \\ \hline
-2. ingoing  &140.114.71.177  &140.114.71.178   & 9898         & 2000        & \begin{tabular}[c]{@{}l@{}}IP dst $\,\to\,$ 192.168.8.254; \\ L4 dst port $\,\to\,$ 7878\end{tabular} \\ \hline
-\end{tabular}
-\end{table*}
+%
+% % NAT example table
+% \begin{table*}[!t]
+% \caption{Flow entry for modifying the packet header fields}
+% \label{table:nat}
+% \centering
+% \begin{tabular}{|l|l|l|l|l|l|}
+% \hline
+%             &IP src          & IP dst          & L4 src port  & L4 dst port & action                                                                            \\ \hline
+% 1. outgoing &192.168.8.254   &140.114.71.177   & 7878         & 9898        & \begin{tabular}[c]{@{}l@{}}IP src $\,\to\,$ 140.114.71.178; \\ L4 src port $\,\to\,$ 2000\end{tabular} \\ \hline
+% 2. ingoing  &140.114.71.177  &140.114.71.178   & 9898         & 2000        & \begin{tabular}[c]{@{}l@{}}IP dst $\,\to\,$ 192.168.8.254; \\ L4 dst port $\,\to\,$ 7878\end{tabular} \\ \hline
+% \end{tabular}
+% \end{table*}
 
 
 
 \subsection{DHCP}
-The DHCP service implements the DHCP protocol to dynamically assign IP addresses to hosts. A DHCP operation uses the UDP protocol. Clients use port 68 as the source port and port 67 as the destination port. By contrast, the server uses port 67 as the source port and port 68 as the destination port. Our system can handle packets to realize the DHCP service.
+The DHCP service implements the DHCP protocol to dynamically assign IP addresses to hosts.
+A DHCP operation uses the UDP protocol.
+% Clients use port 68 as the source port and port 67 as the destination port.
+% By contrast, the server uses port 67 as the source port and port 68 as the destination port.
+Our system can handle packets to realize the DHCP service.
 
 This service is executed through the following steps:
 \begin{enumerate}
@@ -217,15 +237,27 @@ This service is executed through the following steps:
 \item The controller determines whether a packet is a DHCP discovery packet. If so, the controller assigns an IP address, generates a DHCP offer, and then performs a packet-out event. If not, the controller determines whether it is a DHCP request. If the result is positive, the controller generates a DHCP acknowledgement and then performs a packet-out event.
 \end{enumerate}
 
-Our system supports multiple flow tables; however, a specific flow table for the DHCP service is not required because only one rule is installed for all hosts who request the DHCP service. When the service is disabled, the DHCP rule is deleted, and the packets continue to pass through our service chain. The subsequent DHCP packets can reach other DHCP servers by forwarding service.
+Our system supports multiple flow tables; however, a specific flow table for the DHCP service is not required because only one rule is installed for all hosts who request the DHCP service.
+When the service is disabled, the DHCP rule is deleted, and the packets continue to pass through our service chain.
+The subsequent DHCP packets can reach other DHCP servers by forwarding service.
 
 
 \subsection{Traffic Mirroring} \label{ssec:mirror}
+The traffic morroring service could make the manager to specify the output port to mirror the packet flow.
+It could make the network manager monitor the network situation easily.
+In our multiple flow table architecture, we use this service to mirror the packet flow to classifier which could indentify the application.
+The QoS service could use the identified result to limit the application.
+
 
 \subsection{Forwarding} \label{ssec:forwarding}
-In the forwarding service, when the first packet in a new connection is incoming, a packet-in event occurs because no corresponding rule is present. When the controller receives the packet, it records the IP-layer information, including the source IP address, destination IP address, input port number, source MAC address, and destination MAC address. By using the recorded information, the controller can install a 5-tuple forwarding rule with out-port action for this connection, and the subsequent packets do not need to undergo the packet-in event. The 5-tuple comprises the source IP address, destination IP address, network layer protocol, source layer 4 port, and destination layer 4 port.
+In the forwarding service, when the first packet in a new connection is incoming, a packet-in event occurs because no corresponding rule is present.
+When the controller receives the packet, it records the IP-layer information, including the source IP address, destination IP address, input port number, source MAC address, and destination MAC address.
+By using the recorded information, the controller can install a 5-tuple forwarding rule with out-port action for this connection, and the subsequent packets do not need to undergo the packet-in event.
+The 5-tuple comprises the source IP address, destination IP address, network layer protocol, source layer 4 port, and destination layer 4 port.
 
-To gather per-session statistical information, 5-tuple rules are required. Therefore, rules based on the MAC address are not added. The controller installs a pair of dummy rules for every connection, and then requests the switch to obtain current flow statistics every second. Thus, the real-time bandwidth statistics of each connection can be obtained by merely subtracting the byte count from the byte count of the last second.
+To gather per-session statistical information, 5-tuple rules are required. Therefore, rules based on the MAC address are not added.
+The controller installs a pair of dummy rules for every connection, and then requests the switch to obtain current flow statistics every second.
+Thus, the real-time bandwidth statistics of each connection can be obtained by merely subtracting the byte count from the byte count of the last second.
 
 
 
@@ -301,18 +333,25 @@ To reduce this load on the controller, we place the QoS flow table ahead of the 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/evaluation_nat_result}
+\includegraphics[width=3in]{./figures/evaluation_nat}
 \caption{Results of Multiple Table Performance Evaluation}
 \label{fig:evaluation_nat_result}
 \end{figure}
 
 Implementing a single flow table framework is easier than implementing a multiple flow table framework; however, multiple flow table frameworks are more flexible. To verify the efficiency of the multiple flow table vCPE framework, we conducted an experiment by using the NAT service to compare the throughput between single flow table vCPE and multiple flow table vCPE.
 
-An overview of the experimental environment is presented in Fig. \ref{fig:evaluation_nat_scenario}. The NFV controller was run on the Dell PowerEdge R630 rack server, and the Pica8 P-3290 switch \cite{pica8-switch} was used as the SDN switch. We used iPerf2 \cite{iperf} to generate network traffic. The iPerf server connected the public IP address with 140.114.71.178, and then the iPerf client connected to the SDN switch and was controlled by the NFV controller. The NFV controller ran the NAT service, but used different frameworks, a single flow table and multiple flow table.
+An overview of the experimental environment is presented in Fig. \ref{fig:evaluation_nat_scenario}. The NFV controller was run on the Dell PowerEdge R630 rack server, and the EdgeCore AS5712-54X \cite{edge-core-switch} was used as the SDN switch.
+We used iPerf2 \cite{iperf} to generate network traffic. The iPerf server connected the public IP address with 140.114.71.178, and then the iPerf client connected to the SDN switch and was controlled by the NFV controller.
+The NFV controller ran the NAT service, but used different frameworks, a single flow table and multiple flow table.
 
-We used iPerf to generate UDP packets and send them to the server from the client, and we fixed the bandwidth at 100 Mbps. In this experiment, different payload sizes were used to evaluate the performance of the flow tables. As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput values indicate that the performance for large packets such as 1024 bytes and 1470 bytes was higher than that for small packets.
+We used iPerf to generate TCP packets and send them to the server from the client.
+In this experiment, different number of connections were used to evaluate the performance of the flow tables.
+As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput values indicate that the performance for the low number of connections are similar.
+But if we add number of connections, the performance of multiple flow table architecture is lower than single table architecture.
 
-Because the NAT service is required to set the packet header field and a small payload tends to result in more packets being sent to the server simultaneously, the performance for larger packets is high. The throughput value of the multiple table framework is close to that of the single table framework. Thus, the multiple table framework is more flexible than the single table framework; however, the performance of the frameworks is similar (Fig. \ref{fig:evaluation_nat_result}).
+Because, at one connection the multiple table architecture add more rules than single table architecture.
+The throughput value of the multiple table framework is close to that of the single table framework at the low number of connections.
+Although the value of multiple table framework is lower than single table framework at the more number of connections, the multiple table framework is more flexible than the single table framework.
 
 \subsection{Evaluation of QoS When Host Bandwidth Is Limited}
 
