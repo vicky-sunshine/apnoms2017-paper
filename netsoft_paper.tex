@@ -277,8 +277,8 @@ To implement the rate limiting for hosts, we use meter, which is defined within 
 In this strategy, we integrated a flow classification engine to identify the flow belongs to which application.
 To avoid some applications taking up a lot of bandwidth, we can limit the bandwidth for a certain application.
 We will mirror the packet to flow classification engine and identify which application belongs to.
-If we want to limit specific application, we just add a 5-tuple rule and meter to those packets which belong to this application.
-Then the controller will set those flows into the same meter and they will share the bandwidth by this meter.
+If we want to limit a specific application, we just add a 5-tuple rule and same meter to those packets which belong to this application.
+As a result, those applications will share the bandwidth by this meter.
 %
 % This method is illustrated in Fig. \ref{fig:mft_qos_rate_app}.
 % When the network administrator decides to limit a specific application to a certain bandwidth, the controller will limit all packets of this application with 5-tuple rule.
@@ -297,7 +297,7 @@ Then the controller will set those flows into the same meter and they will share
 % \end{figure}
 
 \subsubsection{The Flow Table Order of Forwarding and QoS Service}
-Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, Qos service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packet go to controller, and any packet-in event increases the controller’s load.
+Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, QoS service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packet go to controller, and any packet-in event increases the controller’s load.
 
 To reduce this load on the controller, we place the QoS flow table ahead of the forwarding flow table. In this scenario, all packets that pass through the QoS flow table continue to proceed to the forwarding flow table without satisfying any QoS rules. Then, all packets except the first packet are merely forwarded by the forwarding service instead of causing packet-in events. Thus, the controller’s load decreases.
 
