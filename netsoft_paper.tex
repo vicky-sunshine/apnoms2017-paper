@@ -38,7 +38,12 @@ Email: nfhuang@cs.nthu.edu.tw
 \maketitle
 
 \begin{abstract}
-% Virtual Customer Premise Equipment (vCPE) is one of the game-changing applications that could reduce OPEX and CAPEX simultaneously. This service is based on a complex software architecture with several technologies behind like Virtualized Network Functions (VNFs) and Service Chaining. Many researches have discussed algorithm or mechanism about linking multiple VNFs as a single Network Function Virtualization (NFV) in order to form a service chain in a virtual environment. Nevertheless, the waste of hardware resource and characteristic of SDN switch has never been mentioned before in this architecture. In this paper, a vCPE framework with multiple flow table management is implemented. This proposed vCPE framework is able to create a SDN-enabled VNF which could be deployed as the edge by employing both resources in SDN switch and on the cloud. Last but not least, the system is also integrated with an application identification engine based on machine learning algorithms thus providing flow control in the vCPE framework with confidence.
+Traditional networks have been designed with purpose-built hardware network equipment and it took long cycles to develope and install these network elements. In this context, the concept of virtual Customer Premise Equipment (vCPE) is proposed to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation.
+
+In this paper, we proposed a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between an VNF controller on cloud and an SDN switch at the edge, and designed with our proposed multiple flow table management model. In this way, the customers only need a generic SDN switch at local network and they can obtain different network services by subscribing to different VNF controllers through our vCPE framework. We also perform two kinds of experiments: one is to evaluate the performance of VNFs implemented by the proposed management model, and the other is to demonstrates the flexibility to integrate with any other application identification system, IDS or IPS
+
+
+
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
@@ -64,7 +69,7 @@ In this context, NFV is proposed to innovate in the service delivery arena.
 The concept of NFV is to reduce the coupling between network functions (NFs) and hardware devices.
 Virtual Customer Premise Equipment (vCPE) \cite{nec-vcpe, vcpe-enhance}, in particular virtual residential gateway (vRGW) \cite{nfv-home}, is one of the network services which benefited from NFV \cite{etsi-nfv-usecase}.
 
-In the progress of vCPE development, the SDN is not involved at first.
+In the progress of vCPE development, SDN is not involved at first.
 Most of previous researches focused on other technology to virtualize and deploy the CPE node \cite{virtual-rg, security-vgw, design-vrgw, nfv-hgw-surrogate, linux-cpe, nfv-resoure-contrain-cpe}.
 Cloud4NFV \cite{cloud4nfv, cloud4nfv-telco}, proposed by Portugal Telecom, started to use SDN technology on designing virtual CPE management and organization (MANO) platform for Telco cloud.
 Italy Telecom also proposed NetFATE \cite{netfate}, which is a network function deploy-to-edge model in which the NFs are designed by SDN and perform by SDN switch. Inspired from these two frameworks, we proposed a vCPE framework, attempting to replace hardware-based CPE.
@@ -79,8 +84,9 @@ This new VNF can also be deployed to the network edge by the our vCPE framework.
 
 \section{vCPE System}
 \subsection{Overview of Network Functions} \label{ssec:desc_nfv_overview}
-Our network functions (Fig. \ref{fig:desc_nfv_overview}) are designed with SDN-enabled NFV architecture concept \cite{sdn-enabled}, using the synergies between computer infrastructures (NFVs) and network infrastructures (NFVIs) \cite{etsi-nfv-terminology, etsi-nfv-infra}.
+Our network functions (Fig. \ref{fig:desc_nfv_overview}) are designed with SDN-enabled NFV architecture concept \cite{sdn-enabled}, using the synergies between computing infrastructures (NFVs) and network infrastructures (NFVIs) \cite{etsi-nfv-terminology, etsi-nfv-infra}.
 An NFV is a VNF controller, mainly used for addressing stateful processing and NFVI is an SDN switch used for stateless processing.
+By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources. If we want to update our service, we are required to update only the stateful component, because the stateless component merely follows the commands from the stateful component.
 
 \begin{figure}[!t]
 \centering
@@ -92,9 +98,9 @@ An NFV is a VNF controller, mainly used for addressing stateful processing and N
 
 
 \subsection{Service Deployment Model}
-Unlike a related study that explored the virtualization of network function in PE devices \cite{vcpe-enhance}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the architecture of the model is presented in Fig. \ref{fig:desc_nfv_overview}. Because computing infrastructures involves algorithms and policies and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different network function service by subscribing to a different VNF controller through our vCPE platform.
+Unlike related studies that explored the virtualization of network function in PE devices \cite{vcpe-enhance} or used service-chains in data center to achieve vCPE services \cite{ericcson-vcpe}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the architecture of the model is presented in Fig. \ref{fig:desc_nfv_overview}. Because computing infrastructures involves algorithms and policies and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different network function service by subscribing to a different VNF controller through our vCPE platform.
 
-Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of the customer. An SDN switch is presented at the gateway of this domain. The customer can subscribe to our vCPE service through our dashboard. After subscription, the vCPE system creates a new Docker container or new VM in which an SDN controller is run. The customer only needs to set up the gateway SDN switch to connect the SDN controller through the OpenFlow protocol; thereafter, the switch executes the service.
+Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of the customer. An SDN switch is presented at the gateway of this domain. The customer can subscribe to our vCPE service through our dashboard. After subscription, the vCPE system creates a new Docker container in which an SDN controller is run. The customer only needs to set up the gateway SDN switch to connect the SDN controller through the OpenFlow protocol; thereafter, the switch executes the service.
 
 \begin{figure}[!t]
 \centering
@@ -150,46 +156,27 @@ The VNF orchestrator provides web-based UI for vCPE services management and conf
 \subsection{Multiple Flow Tables Strategy}
 In subsection \ref{ssec:desc_nfv_overview}, we introduce the vCPE service design architecture. The network functions are managed through cooperation between the SDN controller on the cloud and SDN switch at the local network gateway. The controller transforms the network functions into a series of OpenFlow rule requests and sends it to the SDN switch. Following the orders from the controller, the SDN switch inserts the rules into its flow tables, examines the incoming packets against the flow entry match fields, and executes the actions in matching rules. The flow table \cite{sdn-ft} defines all matching and corresponding processing, thus playing an important role in the executive network function.
 
-We found that a single flow table restricts the implementation of our network functions. In \cite{multiple-flow-table}, two conditions under which a single flow table is too restrictive were reported. The first is a condition where a single packet must perform independent actions based on matching with different fields. The second is a condition where the packet requires two-stage processing. To satisfy both conditions, we implemented the network functions by using a multiple flow table strategy.
+We found that a single flow table restricts the implementation of our network functions. In \cite{multiple-flow-table}, two conditions under which a single flow table is too restrictive were reported. The first is a condition where a single packet must perform independent actions based on matching with different fields. The second is a condition where the packet requires two-stage processing. To resolve both restrictions, we implemented the network functions by using a multiple flow table strategy.
 
 Before we discuss about the multiple flow table strategy, we introduce the pipeline of OpenFlow flow table first \cite{openflow-spec}. The processing of each packet always starts at the first flow table. When being processed by a flow table, the packet is matched the flow entries of the flow table and adds corresponding action to the instruction set. The packet can execute the instruction set immediately, or execute after finishing the journey in switch. A flow entry can direct a packet to next table by go-to action. In our multiple flow table management model, we set the ``go to next table'' action as the table-miss action. Therefore, the packet is processed table-by-table in a certain sequence.
 
 In a multiple flow table strategy, it is most important to determine which flow table the rules should be inserted into. We used the type of network function as a demarcation, that is, SDN applications responsible for specific network functions inserted rules into one specific flow table to enable us to focus on the design of the network function itself. However, the order of the flow table and the sequence of the network functions become crucial. This can be addressed by considering the type of match and action in the rules generated by the network function.
 
-The network functions of vCPE services are the firewall service, NAT, DHCP, forwarding, traffic mirroring and QoS. The order of each function was determined as shown in Fig. \ref{fig:mft_table_overview} (note that the flow tables are counted from zero). Each packet In the following sections, we introduce the method of implementing these network functions, the type of rules to be inserted into the SDN switch, and the effect of these rules on deciding the order of the flow tables.
+The network functions of vCPE services are the firewall, NAT, DHCP, forwarding, traffic mirroring and QoS. The order of each function was determined as shown in Fig. \ref{fig:mft_table_overview} (note that the flow tables are counted from zero). In the following sections, we introduce the method of implementing these network functions, the type of rules to be inserted into the SDN switch, and the effect of these rules on deciding the order of the flow tables.
 
 
 
 \subsection{Service Control}
-Service control is used to enable or disable services. To enable a service, the table-miss rule should be modified. A packet-in rule is always placed in the flow table of the last active service as a table miss in case there is no corresponding rule. To enable the service chain, the rules of each service except the last service contain an additional action, ``go to next flow table'', which enables the packets to continue to pass through all active services.
+Service control is used to enable or disable services. To enable a service, the table-miss rule should be modified. A packet-in rule is always placed in the flow table of the last active service as a table miss in case there is no corresponding rule. To enable the service chain, the rules of each service except the last service contain an additional action, ``go to next table'', which enables the packets to continue to pass through all active services.
 
-To disable a service, we must not only modify the table-miss rule but also add an enforce rule. Each enforce rule has maximum priority with the action, ``go to next flow table''. It indicates that packets still pass through the disabled service’s table, but ignore other rules and proceed to the next flow table.
+To disable a service, we merely add an enforce rule. Each enforce rule has the highest priority with the action, ``go to next table''. It indicates that packets still pass through the disabled service’s table, but ignore other rules and proceed to the next flow table.
 
 
 
 \subsection{Firewall}
 The firewall service can dynamically block traffic based on MAC address, IP and layer4 ports.
-% As shown in Table \ref{table:fw}, all the actions in flow entries are dropped. The first rule illustrates that SSH connection with the source IP address 192.168.2.1 is blocked. The second rule indicates that the flow entry blocks the Telnet protocol.
 In our multiple flow table model, the firewall service is located in flow table 1 because once packets are detected by the blocking rules, they do not need to be applied to any other services.
 The action of the firewall is different from those of other services, because in other services, irrespective of the actions taken with the packets, the packets must proceed to the next flow table.
-%
-% % firewall example table
-% \begin{table*}[!t]
-% \caption{Firewall rules in Flow Entry}
-% \label{table:fw}
-% \centering
-% \begin{threeparttable}
-% \begin{tabular}{|l|l|l|l|l|l|}
-% \hline
-% IP proto & IP src      & IP dst       & L4 sport & L4 dport & action \\ \hline
-% TCP      & 192.168.2.1 & *            & *        & 22       & drop   \\ \hline
-% TCP      & *           & *            & *        & 23       & drop   \\ \hline
-% \end{tabular}
-%   \begin{tablenotes}
-%     \item[] Symbol * represents wildcard (matches any value).
-%   \end{tablenotes}
-% \end{threeparttable}
-% \end{table*}
 
 
 
@@ -201,21 +188,11 @@ In controller, the source IP and source port number of the outgoing packet are m
 For the incoming packet, the destination IP address and destination port number are modified to fit the private IP address and port number.
 Subsequently, the SDN controller adds these flow entries to the SDN switch.
 
-% In Fig. \ref{fig:mft_nat}, the public IP address of NAT is 140.114.71.178, and the host private IP address is 192.168.8.254 with the port number 7878.
-% The client sent the packet to a server with the IP address 140.114.71.177 and port number 9898.
-
 In the single flow table framework, two rules must be added to the SDN switch to match the outgoing and incoming situations.
 First, we predicted that the NAT service must be placed in the last table of the multiple flow table framework because the NAT service must set the packet header fields and enable connection to the outside network.
 Most importantly, the SDN switch is placed according to the order of tables to match the field.
 The outgoing and incoming situations must be considered.
 In consideration of all the aforementioned factors, we place the NAT service in the first and last tables in our multiple flow table framework.
-
-% \begin{figure}[!t]
-% \centering
-% \includegraphics[width=3in]{./figures/mft_nat}
-% \caption{Example of modification of IP address and port number by NAT service.}
-% \label{fig:mft_nat}
-% \end{figure}
 
 
 
@@ -244,10 +221,6 @@ When the controller receives the packet, it records the IP-layer information, in
 By using the recorded information, the controller can install a 5-tuple forwarding rule with out-port action for this connection, and the subsequent packets do not need to undergo the packet-in event.
 The 5-tuple comprises the source IP address, destination IP address, network layer protocol, source layer 4 port, and destination layer 4 port.
 
-% To gather per-session statistical information, 5-tuple rules are required. Therefore, rules based on the MAC address are not added.
-% The controller installs a pair of dummy rules for every connection, and then requests the switch to obtain current flow statistics every second.
-% Thus, the real-time bandwidth statistics of each connection can be obtained by merely subtracting the byte count from the byte count of the last second.
-
 
 
 \subsection{QoS}
@@ -256,22 +229,6 @@ Quality of Service (QoS) provides two strategies: hosts rate limitation and appl
 \subsubsection{Hosts Rate Limitation}
 To implement the rate limiting for hosts, we use meter, which is defined within OpenFlow protocol 1.3, to set the limitation in the specific bandwidth. Therefore, we will create a meter for a desired bandwidth and assign the flows of target host with it.
 
-% This method is illustrated in Fig. \ref{fig:mft_qos_rate_host}.
-% When host 2 utilizes a substantial amount of bandwidth from the network in T1, the network administrator decides to set the rate limitation of host 2 to 400 Kbps.
-% When the controller receives this request, marked as (a), it creates a meter with meter id = 1 and bandwidth = 400 Kbps.
-% Then controller will add the rule with the destination MAC address = MAC address of host 2 and meter = 1.
-%
-% After the limitation, the rate of host 2 will reduce and be limited to 400 Kbps immediately.
-% A similar situation occurs to host 1 in T2.
-% The administrator decide to set the rate of host 1 in 600 Kbps, marked as (b).
-% Then the traffic from host 1 is limited to 600 Kbps as expected.
-%
-% \begin{figure}[!t]
-% \centering
-% \includegraphics[width=3in]{./figures/mft_qos_rate_host}
-% \caption{Illustration of rate limiting for a certain host}
-% \label{fig:mft_qos_rate_host}
-% \end{figure}
 
 \subsubsection{Rate Limitation of Applications}
 
@@ -280,22 +237,6 @@ To avoid some applications taking up a lot of bandwidth, we can limit the bandwi
 We will mirror the packet to flow classification engine and identify which application belongs to.
 If we want to limit a specific application, we just add a 5-tuple rule and same meter to those packets which belong to this application.
 As a result, those applications will share the bandwidth by this meter.
-%
-% This method is illustrated in Fig. \ref{fig:mft_qos_rate_app}.
-% When the network administrator decides to limit a specific application to a certain bandwidth, the controller will limit all packets of this application with 5-tuple rule.
-% For example, we want to limited specific application to 1000 Kbps and use flow classification enginedetermine to determine which flows belong to this application.
-%
-% In T0, there are three connections belong to this application, and we will set those connections to the same meter with 5-tuple rule.
-% In T1, there are more two connections are added to this application, and we will also set those new connections to the same meter with 5-tuple rule.
-% In T2, there is a connection stop from this application. Therefore, the bandwidth will be shared by other rest of the connection.
-% However, the sum of bandwidth from this application is always 1000 Kbps.
-%
-% \begin{figure}[!t]
-% \centering
-% \includegraphics[width=3in]{./figures/mft_qos_rate_app}
-% \caption{Illustration of rate limiting for a certain application.}
-% \label{fig:mft_qos_rate_app}
-% \end{figure}
 
 \subsubsection{The Flow Table Order of Forwarding and QoS Service}
 Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, QoS service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packet go to controller, and any packet-in event increases the controller’s load.
