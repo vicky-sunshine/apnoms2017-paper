@@ -201,7 +201,8 @@ In controller, the source IP and source port number of the outgoing packet are m
 For the incoming packet, the destination IP address and destination port number are modified to fit the private IP address and port number.
 Subsequently, the SDN controller adds these flow entries to the SDN switch.
 
-In Fig. \ref{fig:mft_nat}, the public IP address of NAT is 140.114.71.178, and the host private IP address is 192.168.8.254 with the port number 7878. The client sent the packet to a server with the IP address 140.114.71.177 and port number 9898.
+% In Fig. \ref{fig:mft_nat}, the public IP address of NAT is 140.114.71.178, and the host private IP address is 192.168.8.254 with the port number 7878.
+% The client sent the packet to a server with the IP address 140.114.71.177 and port number 9898.
 
 In the single flow table framework, two rules must be added to the SDN switch to match the outgoing and incoming situations.
 First, we predicted that the NAT service must be placed in the last table of the multiple flow table framework because the NAT service must set the packet header fields and enable connection to the outside network.
@@ -209,12 +210,12 @@ Most importantly, the SDN switch is placed according to the order of tables to m
 The outgoing and incoming situations must be considered.
 In consideration of all the aforementioned factors, we place the NAT service in the first and last tables in our multiple flow table framework.
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3in]{./figures/mft_nat}
-\caption{Example of modification of IP address and port number by NAT service.}
-\label{fig:mft_nat}
-\end{figure}
+% \begin{figure}[!t]
+% \centering
+% \includegraphics[width=3in]{./figures/mft_nat}
+% \caption{Example of modification of IP address and port number by NAT service.}
+% \label{fig:mft_nat}
+% \end{figure}
 
 
 
@@ -230,9 +231,9 @@ The subsequent DHCP packets can reach other DHCP servers by forwarding service.
 
 
 \subsection{Traffic Mirroring} \label{ssec:mirror}
-The traffic morroring service could make the manager to specify the output port to mirror the packet flow.
+The traffic mirroring service could make the manager to specify the output port to mirror the packet flow.
 It could make the network manager monitor the network situation easily.
-In our multiple flow table architecture, we use this service to mirror the packet flow to classifier which could indentify the application.
+In our multiple flow table architecture, we use this service to mirror the packet flow to classifier which could identify the application.
 The QoS service could use the identified result to limit the application.
 
 
@@ -243,9 +244,9 @@ When the controller receives the packet, it records the IP-layer information, in
 By using the recorded information, the controller can install a 5-tuple forwarding rule with out-port action for this connection, and the subsequent packets do not need to undergo the packet-in event.
 The 5-tuple comprises the source IP address, destination IP address, network layer protocol, source layer 4 port, and destination layer 4 port.
 
-To gather per-session statistical information, 5-tuple rules are required. Therefore, rules based on the MAC address are not added.
-The controller installs a pair of dummy rules for every connection, and then requests the switch to obtain current flow statistics every second.
-Thus, the real-time bandwidth statistics of each connection can be obtained by merely subtracting the byte count from the byte count of the last second.
+% To gather per-session statistical information, 5-tuple rules are required. Therefore, rules based on the MAC address are not added.
+% The controller installs a pair of dummy rules for every connection, and then requests the switch to obtain current flow statistics every second.
+% Thus, the real-time bandwidth statistics of each connection can be obtained by merely subtracting the byte count from the byte count of the last second.
 
 
 
@@ -275,10 +276,10 @@ To implement the rate limiting for hosts, we use meter, which is defined within 
 \subsubsection{Rate Limitation of Applications}
 
 In this strategy, we integrated a flow classification engine to identify the flow belongs to which application.
-To avoid some applications take up a lot of bandwidth, we can limit the bandwidth for a certain application.
-We will mirror the packet to flow classification engin and identify which application belongs to.
-If we want to limit specific application, we just add a 5-tuple rule and meter to those packets which belong to this application.
-Then the controller will set those flows into the same meter and they will share the bandwidth by this meter.
+To avoid some applications taking up a lot of bandwidth, we can limit the bandwidth for a certain application.
+We will mirror the packet to flow classification engine and identify which application belongs to.
+If we want to limit a specific application, we just add a 5-tuple rule and same meter to those packets which belong to this application.
+As a result, those applications will share the bandwidth by this meter.
 %
 % This method is illustrated in Fig. \ref{fig:mft_qos_rate_app}.
 % When the network administrator decides to limit a specific application to a certain bandwidth, the controller will limit all packets of this application with 5-tuple rule.
@@ -297,7 +298,7 @@ Then the controller will set those flows into the same meter and they will share
 % \end{figure}
 
 \subsubsection{The Flow Table Order of Forwarding and QoS Service}
-Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, Qos service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packet go to controller, and any packet-in event increases the controller’s load.
+Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, QoS service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packet go to controller, and any packet-in event increases the controller’s load.
 
 To reduce this load on the controller, we place the QoS flow table ahead of the forwarding flow table. In this scenario, all packets that pass through the QoS flow table continue to proceed to the forwarding flow table without satisfying any QoS rules. Then, all packets except the first packet are merely forwarded by the forwarding service instead of causing packet-in events. Thus, the controller’s load decreases.
 
