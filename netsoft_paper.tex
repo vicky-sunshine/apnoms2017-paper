@@ -84,16 +84,10 @@ This new VNF can also be deployed to the network edge by the our vCPE framework.
 
 \section{vCPE System}
 \subsection{Overview of Network Functions} \label{ssec:desc_nfv_overview}
-Our network functions (Fig. \ref{fig:desc_nfv_overview}) are designed with SDN-enabled NFV architecture concept \cite{sdn-enabled}, using the synergies between computing infrastructures (NFVs) and network infrastructures (NFVIs) \cite{etsi-nfv-terminology, etsi-nfv-infra}.
+Our network functions are designed with SDN-enabled NFV architecture concept \cite{sdn-enabled}, using the synergies between computing infrastructures (NFVs) and network infrastructures (NFVIs) \cite{etsi-nfv-terminology, etsi-nfv-infra}.
 An NFV is a VNF controller, mainly used for addressing stateful processing and NFVI is an SDN switch used for stateless processing.
 By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources. If we want to update our service, we are required to update only the stateful component, because the stateless component merely follows the commands from the stateful component.
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=2.5in]{./figures/desc_nfv_overview}
-\caption{Overview of network functions.}
-\label{fig:desc_nfv_overview}
-\end{figure}
 
 
 
