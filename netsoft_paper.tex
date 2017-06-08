@@ -40,7 +40,7 @@ Email: nfhuang@cs.nthu.edu.tw
 \begin{abstract}
 Traditional networks have been designed with purpose-built hardware network equipment and it took long cycles to develope and install these network elements. In this context, the concept of virtual Customer Premise Equipment (vCPE) is proposed to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation.
 
-In this paper, we proposed a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between an VNF controller on cloud and an SDN switch at the edge, and designed with our proposed multiple flow table management model. In this way, the customers only need a generic SDN switch at local network and they can obtain different network services by subscribing to different VNF controllers through our vCPE framework. We also perform two kinds of experiments: one is to evaluate the performance of VNFs implemented by the proposed management model, and the other is to demonstrates the flexibility to integrate with any other application identification system, IDS or IPS
+In this paper, we proposed a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between an VNF controller on cloud and an SDN switch at the edge, and designed with our proposed multiple flow table management model. In this way, the customers only need a generic SDN switch at local network and they can obtain different network services by subscribing to different VNF controllers through our vCPE framework. We also perform two kinds of experiments: one is to evaluate the performance of VNFs implemented by the proposed management model, and the other is to demonstrates the flexibility to integrate with any other application classification system, IDS or IPS
 
 
 
@@ -98,7 +98,7 @@ Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.45\textwidth]{./figures/desc_service_deployment}
+\includegraphics[width=0.4\textwidth]{./figures/desc_service_deployment}
 \caption{Service deployment model.}
 \label{fig:desc_service_deployment}
 \end{figure}
@@ -110,7 +110,7 @@ The architecture (Fig. \ref{fig:desc_vcpe_framework}) is adapted from the NFV-MA
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.45\textwidth]{./figures/desc_vcpe_framework}
+\includegraphics[width=0.4\textwidth]{./figures/desc_vcpe_framework}
 \caption{Architecture of the vCPE system.}
 \label{fig:desc_vcpe_framework}
 \end{figure}
@@ -205,7 +205,7 @@ The subsequent DHCP packets can reach other DHCP servers by forwarding service.
 The traffic mirroring service could make the manager to specify the output port to mirror the packet flow.
 It could make the network manager monitor the network situation easily.
 In our multiple flow table architecture, we use this service to mirror the packet flow to classifier which could identify the application.
-The QoS service could use the identified result to limit the application.
+The QoS service could use the classified result to limit the application.
 
 
 
@@ -245,31 +245,30 @@ To reduce this load on the controller, we place the QoS flow table ahead of the 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/evaluation_nat_scenario}
+\includegraphics[width=0.4\textwidth]{./figures/evaluation_nat_scenario}
 \caption{Multiple Table Performance Evaluation Scenario}
 \label{fig:evaluation_nat_scenario}
 \end{figure}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/evaluation_nat}
+\includegraphics[width=0.4\textwidth]{./figures/evaluation_nat}
 \caption{Results of Multiple Table Performance Evaluation}
 \label{fig:evaluation_nat_result}
 \end{figure}
 
-Implementing a single flow table framework is easier than implementing a multiple flow table framework; however, multiple flow table frameworks are more flexible. To verify the efficiency of the multiple flow table vCPE framework, we conducted an experiment by using the NAT service to compare the throughput between single flow table vCPE and multiple flow table vCPE.
+Implementing a single flow table framework is easier than implementing a multiple flow table framework; however, multiple flow table frameworks are more flexible. To verify the efficiency of the multiple flow table vCPE framework, we conducted an experiment by using the NAT and forwarding service to compare the throughput between single flow table vCPE and multiple flow table vCPE.
 
 An overview of the experimental environment is presented in Fig. \ref{fig:evaluation_nat_scenario}. The NFV controller was run on the Dell PowerEdge R630 rack server, and the EdgeCore AS5712-54X \cite{edge-core-switch} was used as the SDN switch.
-We used iPerf2 \cite{iperf} to generate network traffic. The iPerf server connected the public IP address with 140.114.71.176, and then the iPerf client connected to the SDN switch and was controlled by the NFV controller.
+We used iPerf \cite{iperf} to generate network traffic. The iPerf server connected the public IP address with 140.114.71.176, and then the iPerf client connected to the SDN switch and was controlled by the NFV controller.
 The NFV controller ran the NAT service, but used different frameworks, a single flow table and multiple flow table.
 
 We used iPerf to generate TCP packets and send them to the server from the client.
 In this experiment, different number of connections were used to evaluate the performance of the flow tables.
-As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput values indicate that the performance for the low number of connections are similar.
-But if we add number of connections, the performance of multiple flow table architecture is lower than single table architecture.
+As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput values indicated that the performance for the low number of connections are similar.
+But if we increased the number of connections, the difference of performance between the two applications performance become bigger and bigger.
 
-Because, at one connection the multiple table architecture add more rules than single table architecture.
-The throughput value of the multiple table framework is close to that of the single table framework at the low number of connections.
+For each connection, the multiple table application added 4 rules and single table application added merely 2 rules. Since the multiple table applications needed more rules than the other, the throughput of the multiple table framework is worse than the throughput of the single table framework for the large number of connections conditions.
 Although the value of multiple table framework is lower than single table framework at the more number of connections, the multiple table framework is more flexible than the single table framework.
 
 
@@ -291,42 +290,42 @@ We observed that the bandwidth of the host 2 rapidly increased to 5120 Kbps.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/qos_limit_host}
+\includegraphics[width=0.4\textwidth]{./figures/qos_limit_host}
 \caption{Limiting the download rate of a host.}
 \label{fig:qos_limit_host}
 \end{figure}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/mft_qos_rate_domain_app}
-\caption{Limit the rate of Filezilla in a network domain.}
+\includegraphics[width=0.4\textwidth]{./figures/mft_qos_rate_domain_app}
+\caption{Limit the rate of FileZilla in a network domain.}
 \label{fig:mft_qos_rate_domain_app}
 \end{figure}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/classification_classifying}
-\caption{Architecture of our application identification system in classification phase.}
+\includegraphics[width=0.4\textwidth]{./figures/classification_classifying}
+\caption{Architecture of our application classification system in classification phase.}
 \label{fig:class_classifying}
 \end{figure}
 
 
 
 \subsection{Evaluation of QoS When Application Bandwidth Is Limited}
-In our experimental environment, we mirror all traffic from the SDN switch to application identification system and identify those flows belong to which application.
-Then the application identification system uploaded the identification results to the database.
+In our experimental environment, we mirror all traffic from the SDN switch to application classification system and identify those flows belong to which application.
+Then the application classification system uploaded the classification results to the database.
 Subsequently, the controller received the results from the database and updated the flow information of the applications.
-Therefore, we could use the flow information (5-tuple and identification results) to limit the application bandwidth.
+Therefore, we could use the flow information (5-tuple and classification results) to limit the application bandwidth.
 
-We selected Filezilla to verify our function for limiting applications and there are two hosts (host 1 and host 2) in the same network domain.
-Then we limited the bandwidth of Filezilla in this network domain. That is, the sum of bandwidths from host 1 and host 2.
+We selected FileZilla to verify our function for limiting applications and there are two hosts (host 1 and host 2) in the same network domain.
+Then we limited the bandwidth of FileZilla in this network domain. That is, the sum of bandwidths from host 1 and host 2.
 
 As shown in Fig. \ref{fig:mft_qos_rate_domain_app}.
-Initially, without limitation, the total bandwidth of Filezilla was approximately 140000 Kbps.
-At the \nth{6} second, we limited the total bandwidth from Filezilla to 4096 Kbps.
-Then we observed that the total traffic from Filezilla in this network domain immediately decreased.
-Clearly, the total traffic from Filezilla was approximately 4096 Kbps.
-At the \nth{38} second, we change the limitation from 4096 Kbps to 8192 Kbps and the total traffic from Filezilla increase to 8192 Kbps as expected.
+Initially, without limitation, the total bandwidth of FileZilla was approximately 140000 Kbps.
+At the \nth{6} second, we limited the total bandwidth from FileZilla to 4096 Kbps.
+Then we observed that the total traffic from FileZilla in this network domain immediately decreased.
+Clearly, the total traffic from FileZilla was approximately 4096 Kbps.
+At the \nth{38} second, we change the limitation from 4096 Kbps to 8192 Kbps and the total traffic from FileZilla increase to 8192 Kbps as expected.
 
 Using this function for limiting applications, we can guarantee that the traffic in a network domain does not exceed the network capacity, thus preventing traffic congestion.
 
@@ -334,7 +333,7 @@ Using this function for limiting applications, we can guarantee that the traffic
 
 
 \section{Conclusion and Future Works}
-The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not be realized by single table mechanism are also resolved. The experimental results show that the framework provides better performance in VNF compete over single table SDN application. The integration evaluation also demonstrates its flexibility to integrate with any other bonus application identification system, IDS or IPS
+The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not be realized by single table mechanism are also resolved. The experimental results show that the framework provides better performance in VNF compete over single table SDN application. The integration evaluation also demonstrates its flexibility to integrate with any other bonus application classification system, IDS or IPS
 
 This paper implemented multiple VNF cascade system over the single-table SDN switch. However, the multi-table environment in experiment basing on the single-table switch environment can't achieve the better performance compare with single-table switch. Although the multi-table based SDN switches are available on the market, those switches have different supporting table for different flow entry which might not be compatible to the customer requirement. If the algorithm is not appropriate designed for the specific network application entry, it will cause system crashed. We plan to design the algorithms specifically for multi-table switch in order to minimize the possibility of the crash of the system and maximize the performance.
 
