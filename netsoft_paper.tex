@@ -230,9 +230,9 @@ The subsequent DHCP packets can reach other DHCP servers by forwarding service.
 
 
 \subsection{Traffic Mirroring} \label{ssec:mirror}
-The traffic morroring service could make the manager to specify the output port to mirror the packet flow.
+The traffic mirroring service could make the manager to specify the output port to mirror the packet flow.
 It could make the network manager monitor the network situation easily.
-In our multiple flow table architecture, we use this service to mirror the packet flow to classifier which could indentify the application.
+In our multiple flow table architecture, we use this service to mirror the packet flow to classifier which could identify the application.
 The QoS service could use the identified result to limit the application.
 
 
@@ -275,8 +275,8 @@ To implement the rate limiting for hosts, we use meter, which is defined within 
 \subsubsection{Rate Limitation of Applications}
 
 In this strategy, we integrated a flow classification engine to identify the flow belongs to which application.
-To avoid some applications take up a lot of bandwidth, we can limit the bandwidth for a certain application.
-We will mirror the packet to flow classification engin and identify which application belongs to.
+To avoid some applications taking up a lot of bandwidth, we can limit the bandwidth for a certain application.
+We will mirror the packet to flow classification engine and identify which application belongs to.
 If we want to limit specific application, we just add a 5-tuple rule and meter to those packets which belong to this application.
 Then the controller will set those flows into the same meter and they will share the bandwidth by this meter.
 %
