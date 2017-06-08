@@ -201,7 +201,8 @@ In controller, the source IP and source port number of the outgoing packet are m
 For the incoming packet, the destination IP address and destination port number are modified to fit the private IP address and port number.
 Subsequently, the SDN controller adds these flow entries to the SDN switch.
 
-In Fig. \ref{fig:mft_nat}, the public IP address of NAT is 140.114.71.178, and the host private IP address is 192.168.8.254 with the port number 7878. The client sent the packet to a server with the IP address 140.114.71.177 and port number 9898.
+% In Fig. \ref{fig:mft_nat}, the public IP address of NAT is 140.114.71.178, and the host private IP address is 192.168.8.254 with the port number 7878.
+% The client sent the packet to a server with the IP address 140.114.71.177 and port number 9898.
 
 In the single flow table framework, two rules must be added to the SDN switch to match the outgoing and incoming situations.
 First, we predicted that the NAT service must be placed in the last table of the multiple flow table framework because the NAT service must set the packet header fields and enable connection to the outside network.
@@ -209,12 +210,12 @@ Most importantly, the SDN switch is placed according to the order of tables to m
 The outgoing and incoming situations must be considered.
 In consideration of all the aforementioned factors, we place the NAT service in the first and last tables in our multiple flow table framework.
 
-\begin{figure}[!t]
-\centering
-\includegraphics[width=3in]{./figures/mft_nat}
-\caption{Example of modification of IP address and port number by NAT service.}
-\label{fig:mft_nat}
-\end{figure}
+% \begin{figure}[!t]
+% \centering
+% \includegraphics[width=3in]{./figures/mft_nat}
+% \caption{Example of modification of IP address and port number by NAT service.}
+% \label{fig:mft_nat}
+% \end{figure}
 
 
 
@@ -243,9 +244,9 @@ When the controller receives the packet, it records the IP-layer information, in
 By using the recorded information, the controller can install a 5-tuple forwarding rule with out-port action for this connection, and the subsequent packets do not need to undergo the packet-in event.
 The 5-tuple comprises the source IP address, destination IP address, network layer protocol, source layer 4 port, and destination layer 4 port.
 
-To gather per-session statistical information, 5-tuple rules are required. Therefore, rules based on the MAC address are not added.
-The controller installs a pair of dummy rules for every connection, and then requests the switch to obtain current flow statistics every second.
-Thus, the real-time bandwidth statistics of each connection can be obtained by merely subtracting the byte count from the byte count of the last second.
+% To gather per-session statistical information, 5-tuple rules are required. Therefore, rules based on the MAC address are not added.
+% The controller installs a pair of dummy rules for every connection, and then requests the switch to obtain current flow statistics every second.
+% Thus, the real-time bandwidth statistics of each connection can be obtained by merely subtracting the byte count from the byte count of the last second.
 
 
 
