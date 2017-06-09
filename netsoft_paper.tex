@@ -275,8 +275,8 @@ Although the value of multiple table framework is lower than single table framew
 
 \subsection{Evaluation of QoS When Host Bandwidth Is Limited}
 
-We verify our function by downloading a large file, because downloading is a situation that always consumes network resources in practice.
-We downloaded an image of Ubuntu 14.04 that was approximately 1 GB in size.
+Because downloading is a situation that always consumes network resources in practice,
+we verify our function by downloadingan image of Ubuntu 14.04 that was approximately 1 GB in size.
 
 The NFV controller ran on the Dell PowerEdge R630 rack server and executed QoS.
 The Edge-Core AS5712-54X \cite{edge-core-switch} switch was used as the OpenFlow-enabled switch with the PicOS TM r2.6 operating system.
@@ -297,22 +297,22 @@ We observed that the bandwidth of the host 2 rapidly increased to 5120 Kbps.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.4\textwidth]{./figures/mft_qos_rate_domain_app}
-\caption{Limit the rate of FileZilla in a network domain.}
-\label{fig:mft_qos_rate_domain_app}
-\end{figure}
-
-\begin{figure}[!t]
-\centering
 \includegraphics[width=0.4\textwidth]{./figures/classification_classifying}
 \caption{Architecture of our application classification system in classification phase.}
 \label{fig:class_classifying}
 \end{figure}
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.4\textwidth]{./figures/mft_qos_rate_domain_app}
+\caption{Limit the rate of FileZilla in a network domain.}
+\label{fig:mft_qos_rate_domain_app}
+\end{figure}
+
 
 
 \subsection{Evaluation of QoS When Application Bandwidth Is Limited}
-In our experimental environment, we mirror all traffic from the SDN switch to application classification system and identify those flows belong to which application.
+Our experimental environment is presented in Fig. \ref{fig:class_classifying}. In our experimental environment, we mirror all traffic from the SDN switch to application identification system and identify those flows belong to which application.
 Then the application classification system uploaded the classification results to the database.
 Subsequently, the controller received the results from the database and updated the flow information of the applications.
 Therefore, we could use the flow information (5-tuple and classification results) to limit the application bandwidth.
