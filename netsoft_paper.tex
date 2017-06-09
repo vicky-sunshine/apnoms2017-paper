@@ -312,7 +312,7 @@ We observed that the bandwidth of the host 2 rapidly increased to 5120 Kbps.
 
 
 \subsection{Evaluation of QoS When Application Bandwidth Is Limited}
-Our experimental environment is presented in Fig. \ref{fig:class_classifying}. In our experimental environment, we mirror all traffic from the SDN switch to application identification system and identify those flows belong to which application.
+Our experimental environment is presented in Fig. \ref{fig:class_classifying}. In our experimental environment, we mirror all traffic from the SDN switch to application classification system and identify those flows belong to which application.
 Then the application classification system uploaded the classification results to the database.
 Subsequently, the controller received the results from the database and updated the flow information of the applications.
 Therefore, we could use the flow information (5-tuple and classification results) to limit the application bandwidth.
