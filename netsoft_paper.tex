@@ -276,12 +276,12 @@ Although the value of multiple table framework is lower than single table framew
 
 \subsection{Evaluation of QoS When Host Bandwidth Is Limited}
 
-We verify our function by downloading a large file, because downloading is a situation that always consumes network resources in practice.
-We downloaded an image of Ubuntu 14.04 that was approximately 1 GB in size.
+Because downloading is a situation that always consumes network resources in practice,
+we verify our function by downloadingan image of Ubuntu 14.04 that was approximately 1 GB in size.
 
 The NFV controller ran on the Dell PowerEdge R630 rack server and executed QoS.
 The Edge-Core AS5712-54X \cite{edge-core-switch} switch was used as the OpenFlow-enabled switch with the PicOS TM r2.6 operating system.
-We used a desktop computer as the experimental host to record the bandwidth every 2 seconds.
+We used desktop computers as the experimental hosts and recorded the bandwidth every 2 seconds.
 
 As shown in Fig. \ref{fig:qos_limit_host}, we started downloading the file without rate limiting and the rate was between 40,000 and 70,000 Kbps.
 At the \nth{8} second, we limited the host 1 to 2048 Kbps and host 2 to 1024 Kbps by adding the rule of their MAC address.
@@ -298,22 +298,22 @@ We observed that the bandwidth of the host 2 rapidly increased to 5120 Kbps.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=3in]{./figures/mft_qos_rate_domain_app}
-\caption{Limit the rate of Filezilla in a network domain.}
-\label{fig:mft_qos_rate_domain_app}
-\end{figure}
-
-\begin{figure}[!t]
-\centering
 \includegraphics[width=3in]{./figures/classification_classifying}
 \caption{Architecture of our application identification system in classification phase.}
 \label{fig:class_classifying}
 \end{figure}
 
+\begin{figure}[!t]
+\centering
+\includegraphics[width=3in]{./figures/mft_qos_rate_domain_app}
+\caption{Limit the rate of Filezilla in a network domain.}
+\label{fig:mft_qos_rate_domain_app}
+\end{figure}
+
 
 
 \subsection{Evaluation of QoS When Application Bandwidth Is Limited}
-In our experimental environment, we mirror all traffic from the SDN switch to application identification system and identify those flows belong to which application.
+Our experimental environment is presented in Fig. \ref{fig:class_classifying}. In our experimental environment, we mirror all traffic from the SDN switch to application identification system and identify those flows belong to which application.
 Then the application identification system uploaded the identification results to the database.
 Subsequently, the controller received the results from the database and updated the flow information of the applications.
 Therefore, we could use the flow information (5-tuple and identification results) to limit the application bandwidth.
