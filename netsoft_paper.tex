@@ -44,11 +44,7 @@ Institute of Communication Engineering National Tsing Hua University, Hsinchu, T
 \maketitle
 
 \begin{abstract}
-Traditional networks have been designed with purpose-built hardware network equipment and it took long cycles to develop and install these network elements. In this context, the concept of virtual Customer Premise Equipment (vCPE) is proposed to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation.
-
-In this paper, we proposed a vCPE framework enables deploying VNFs as the network edge. These VNFs are achieved by the synergies between a VNF controller on cloud and an SDN switch at the edge and designed with our proposed multiple flow table management model. In this way, the customers only need a generic SDN switch at the local network and they can obtain different network services by subscribing to different VNF controllers through our vCPE framework. We also perform two kinds of experiments: one is to evaluate the performance of VNFs implemented by the proposed management model, and the other is to demonstrates the flexibility to integrate with any other application classification system, IDS or IPS.
-
-
+The virtual Customer Premise Equipment (vCPE) concept has been proposed recently to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation.his paper proposes a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between a VNF controller on cloud and an SDN switch at the edge. A multiple flow table management model is also proposed to implement virtual network functions. Through the proposed vCPE framework, the customer only needs a generic SDN switch at local network and very easy to subscribing different network services, such as Firewall, NAT,DHCP, and applications quality of service (QoS) by a browser-based dashboard. Experiments are conducted to evaluate the performance of VNFs implemented by the proposed multiple flow table management model. The flexibility of framework to integrate with other application classification systems, such as IDS or IPS, is also demonstrated.
 
 \end{abstract}
 
@@ -80,9 +76,10 @@ Most of previous researches focused on other technology to virtualize and deploy
 Cloud4NFV \cite{cloud4nfv, cloud4nfv-telco}, proposed by Portugal Telecom, started to use SDN technology on designing virtual CPE management and organization (MANO) platform.
 Italy Telecom also proposed NetFATE \cite{netfate}, which is a network function deploy-to-edge model in which the NFs are designed by SDN and perform by SDN switch. However, NetFATE merely tested the scenario of virtual firewall which lacked sufficient experimental results for other scenarios under NetFATE platform.
 
-Inspired from these two frameworks, we proposed a vCPE framework and six major virtual network functions in home gateway, attempting to replace hardware-based CPE.
-Furthermore, when the NFV is performed by SDN switch, there will be restricting on the OpenFlow Table \cite{multiple-flow-table}, thus we also proposed a multiple OpenFlow table mechanism to implement network functions and explain how to use it to resolve the restriction of table.
-We also evaluate the new VNF implemented by the proposed mechanism, and compare with the single-table mechanism.
+Inspired from these two frameworks, a vCPE framework with six major virtual network functions are proposed in this paper, attempting to replace hardware-based CPE.
+Nevertheless, when the NFV is deployed at network edge (SDN switch), it is very difficult and not efficient to implement multiple virtual network functions in a single OpenFlow Table \cite{multiple-flow-table}. In this paper, a multiple OpenFlow table mechanism is also proposed to implement multiple network functions. The performance of new VNF implemented by the proposed mechanism is evaluated by comparing with the single-table mechanism. Based on the proposed vCPE framework, this new VNF can also be deployed to the network edge easily.
+
+
 
 
 
@@ -237,7 +234,7 @@ We will mirror the packet to flow classification engine and identify which appli
 If we want to limit a specific application, we just add a 5-tuple rule and same meter to those packets which belong to this application.
 As a result, those applications will share the bandwidth by this meter.
 
-\subsubsection{The Flow Table Order of Forwarding and QoS Service}
+\subsubsection{The Order of Forwarding Table and QoS Table}
 Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, QoS service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packet go to controller, and any packet-in event increases the controller’s load.
 
 To reduce this load on the controller, we place the QoS flow table ahead of the forwarding flow table. In this scenario, all packets that pass through the QoS flow table continue to proceed to the forwarding flow table without satisfying any QoS rules. Then, all packets except the first packet are merely forwarded by the forwarding service instead of causing packet-in events. Thus, the controller’s load decreases.
@@ -338,9 +335,11 @@ Using this function for limiting applications, we can guarantee that the traffic
 
 
 \section{Conclusion and Future Works}
-The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not be realized by single table mechanism are also resolved. The experimental results show that the framework provides better performance in VNF compete over single table SDN application. The integration evaluation also demonstrates its flexibility to integrate with any other bonus application classification system, IDS or IPS.
+The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not be realized by single table mechanism are also resolved. The results of the experiment show that the new VNF provides comparable performance compare with single table SDN application. The integration evaluation also demonstrates its flexibility to integrate with any other bonus application classification system, IDS or IPS.
 
 This paper implemented multiple VNF cascade system over the single-table SDN switch. However, the multi-table environment in experiment basing on the single-table switch environment can't achieve the better performance compare with single-table switch. Although the multi-table based SDN switches are available on the market, those switches have different supporting table for different flow entry which might not be compatible to the customer requirement. If the algorithm is not appropriate designed for the specific network application entry, it will cause system crashed. We plan to design the algorithms specifically for multi-table switch in order to minimize the possibility of the crash of the system and maximize the performance.
+
+
 
 \bibliographystyle{ieeetr}
 \bibliography{paper}
