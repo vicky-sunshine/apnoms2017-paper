@@ -14,7 +14,7 @@
 \usepackage[flushleft]{threeparttable}
 \usepackage[super]{nth}
 \usepackage[none]{hyphenat}
-\usepackage[OT1]{fontenc} 
+\usepackage[OT1]{fontenc}
 
 
 \begin{document}
@@ -44,13 +44,13 @@ Institute of Communication Engineering National Tsing Hua University, Hsinchu, T
 \maketitle
 
 \begin{abstract}
-The virtual Customer Premise Equipment (vCPE) concept has been proposed recently to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation. This paper proposes a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between a VNF controller on cloud and an SDN switch at the edge. A multiple flow table management model is also proposed to implement virtual network functions. Through the proposed vCPE framework, the customer only needs a generic SDN switch at local network and very easy to subscribing different network services, such as Firewall, NAT,DHCP, and applications quality of service (QoS) by a browser-based dashboard. Experiments are conducted to evaluate the performance of VNFs implemented by the proposed multiple flow table management model. The flexibility of framework to integrate with other application classification systems, such as IDS or IPS, is also demonstrated.
+The virtual Customer Premise Equipment (vCPE) concept has been proposed recently to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation. This paper proposes a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between a VNF controller on the cloud and an SDN switch at the edge. A multiple flow table management model is also proposed to implement virtual network functions. Through the proposed vCPE framework, the customer only needs a generic SDN switch at local network and very easy to subscribing different network services, such as Firewall, NAT, DHCP, and applications quality of service (QoS) by a browser-based dashboard. Experiments are conducted to evaluate the performance of VNFs implemented by the proposed multiple flow table management model. The flexibility of framework to integrate with other application classification systems, such as IDS or IPS, is also demonstrated.
 
 \end{abstract}
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-SDN, NFV, vCPE, multiple flow tables
+Multiple flow tables, NFV, SDN, vCPE
 \end{IEEEkeywords}
 
 \IEEEpeerreviewmaketitle{}
@@ -194,7 +194,7 @@ In consideration of all the aforementioned factors, we place the NAT service in 
 
 \subsection{DHCP}
 The DHCP service implements the DHCP protocol to dynamically assign IP addresses to hosts.
-Since the DHCP merely needs one Packet-in rule to foward DHCP packets to controller, a specific flow table for the DHCP service is not required.
+Since the DHCP merely needs one Packet-in rule to forward DHCP packets to controller, a specific flow table for the DHCP service is not required.
 When the service is disabled, the DHCP rule is deleted, and the packets continue to pass through our service chain.
 The subsequent DHCP packets can reach other DHCP servers by forwarding service.
 
@@ -211,7 +211,7 @@ The QoS service could use the classified result to limit the application.
 \subsection{Forwarding} \label{ssec:forwarding}
 In the forwarding service, when the first packet in a new connection is incoming, a packet-in event occurs because no corresponding rule is present.
 When the controller receives the packet, it records the IP-layer information, including the source IP address, destination IP address, input port number, source MAC address, and destination MAC address.
-By using the recorded information, the controller can install a 5-tuple forwarding rule with out-port action for this connection, and the subsequent packets do not need to undergo the packet-in event.
+By using the recorded information, the controller can install a 5-tuple forwarding rule with the out-port action for this connection, and the subsequent packets do not need to undergo the packet-in event.
 The 5-tuple comprises the source IP address, destination IP address, network layer protocol, source layer 4 port, and destination layer 4 port.
 
 
@@ -232,7 +232,7 @@ If we want to limit a specific application, we just add a 5-tuple rule and same 
 As a result, those applications will share the bandwidth by this meter.
 
 \subsubsection{The Order of Forwarding Table and QoS Table}
-Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, QoS service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packet go to controller, and any packet-in event increases the controller’s load.
+Because the order of NAT, DHCP, mirroring and the firewall have been determined, we only need to decide the arrangement of QoS and forwarding. Assume that we place the QoS flow table after the forwarding flow table. In addition, we have only two services enabled, forwarding and QoS; therefore, the packet-in rule is in the last flow table of active service, QoS service. Then, suppose that a host is not limited by QoS policies. The first packet is not affected in both arrangements. For the subsequent packets, a difference can be observed. The packets that satisfy the rules in the forwarding flow table can not match the rate limit rules in QoS flow table, because the host is not limited by QoS service; instead. As a result, the packets cause packet-in events by matching the packet-in rule in QoS service. This is unexpected because the packets already get the out-port action from the forwarding service. That is, it is not necessary to send these packets go to controller, and any packet-in event increases the controller’s load.
 
 To reduce this load on the controller, we place the QoS flow table ahead of the forwarding flow table. In this scenario, all packets that pass through the QoS flow table continue to proceed to the forwarding flow table without satisfying any QoS rules. Then, all packets except the first packet are merely forwarded by the forwarding service instead of causing packet-in events. Thus, the controller’s load decreases.
 
@@ -265,7 +265,7 @@ The NFV controller ran the NAT service, but used different frameworks, a single 
 We used iPerf to generate TCP packets and send them to the server from the client.
 In this experiment, different number of connections were used to evaluate the performance of the flow tables.
 As shown in Fig. \ref{fig:evaluation_nat_result}, the throughput values indicated that the performance for the low number of connections are similar.
-But if we increased the number of connections, the difference of performance between the two applications performance become bigger and bigger.
+But if we increased the number of connections, the difference of performance between the performance of two applications become bigger and bigger.
 
 For each connection, the multiple table application added 4 rules and single table application added merely 2 rules. Since the multiple table applications needed more rules than the other, the throughput of the multiple table framework is worse than the throughput of the single table framework for the large number of connections conditions.
 Although the value of multiple table framework is lower than single table framework at the more number of connections, the multiple table framework is more flexible than the single table framework.
@@ -311,7 +311,7 @@ We observed that the bandwidth of the host 2 rapidly increased to 5120 Kbps.
 
 
 \subsection{Evaluation of QoS When Application Bandwidth Is Limited}
-Our experimental environment is presented in Fig. \ref{fig:class_classifying}. 
+Our experimental environment is presented in Fig. \ref{fig:class_classifying}.
 In our experimental environment, we mirror all traffic from the SDN switch to application classification system \cite{che-chuan-apnoms} and identify those flows belong to which application.
 Then the application classification system uploaded the classification results to the database.
 Subsequently, the controller received the results from the database and updated the flow information of the applications.
