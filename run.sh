@@ -1,0 +1,4 @@
+xelatex netsoft_paper
+bibtex netsoft_paper
+xelatex netsoft_paper
+xelatex netsoft_paper

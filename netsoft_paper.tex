@@ -10,16 +10,16 @@
 \usepackage{cite}
 \usepackage{url}
 \usepackage{hyperref}
-\usepackage{amsmath}
 \usepackage{enumerate}
 \usepackage[flushleft]{threeparttable}
 \usepackage[super]{nth}
 \usepackage[none]{hyphenat}
+\usepackage[OT1]{fontenc} 
+
 
 \begin{document}
 
-\title{A Novel vCPE Framework for Enabling Virtual Network Functions with Multiple Flow Tables Architecture in SDN
-switches}
+\title{A Novel vCPE Framework for Enabling Virtual Network Functions with Multiple Flow Tables Architecture in SDN switches}
 
 \author{
 \IEEEauthorblockN{
@@ -44,7 +44,7 @@ Institute of Communication Engineering National Tsing Hua University, Hsinchu, T
 \maketitle
 
 \begin{abstract}
-The virtual Customer Premise Equipment (vCPE) concept has been proposed recently to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation.his paper proposes a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between a VNF controller on cloud and an SDN switch at the edge. A multiple flow table management model is also proposed to implement virtual network functions. Through the proposed vCPE framework, the customer only needs a generic SDN switch at local network and very easy to subscribing different network services, such as Firewall, NAT,DHCP, and applications quality of service (QoS) by a browser-based dashboard. Experiments are conducted to evaluate the performance of VNFs implemented by the proposed multiple flow table management model. The flexibility of framework to integrate with other application classification systems, such as IDS or IPS, is also demonstrated.
+The virtual Customer Premise Equipment (vCPE) concept has been proposed recently to reduce OPEX and CAPEX. Software-defined networking (SDN) and network functions virtualization (NFV) are key roles for this innovation. This paper proposes a vCPE framework enables deploying VNFs as edge of network. These VNFs are achieved by the synergies between a VNF controller on cloud and an SDN switch at the edge. A multiple flow table management model is also proposed to implement virtual network functions. Through the proposed vCPE framework, the customer only needs a generic SDN switch at local network and very easy to subscribing different network services, such as Firewall, NAT,DHCP, and applications quality of service (QoS) by a browser-based dashboard. Experiments are conducted to evaluate the performance of VNFs implemented by the proposed multiple flow table management model. The flexibility of framework to integrate with other application classification systems, such as IDS or IPS, is also demonstrated.
 
 \end{abstract}
 
@@ -194,10 +194,7 @@ In consideration of all the aforementioned factors, we place the NAT service in 
 
 \subsection{DHCP}
 The DHCP service implements the DHCP protocol to dynamically assign IP addresses to hosts.
-Our system can handle packets to realize the DHCP service.
-
-
-Our system supports multiple flow tables; however, a specific flow table for the DHCP service is not required because only one rule is installed for all hosts who request the DHCP service.
+Since the DHCP merely needs one Packet-in rule to foward DHCP packets to controller, a specific flow table for the DHCP service is not required.
 When the service is disabled, the DHCP rule is deleted, and the packets continue to pass through our service chain.
 The subsequent DHCP packets can reach other DHCP servers by forwarding service.
 
@@ -337,13 +334,15 @@ Using this function for limiting applications, we can guarantee that the traffic
 \section{Conclusion and Future Works}
 The proposed vCPE framework enables deploying NFVs as edge of network and these VNFs are implemented with multiple flow table management model. In this way, the customers only need a SDN switch at local network, and some network functions that could not be realized by single table mechanism are also resolved. The results of the experiment show that the new VNF provides comparable performance compare with single table SDN application. The integration evaluation also demonstrates its flexibility to integrate with any other bonus application classification system, IDS or IPS.
 
-This paper implemented multiple VNF cascade system over the single-table SDN switch. However, the multi-table environment in experiment basing on the single-table switch environment can't achieve the better performance compare with single-table switch. Although the multi-table based SDN switches are available on the market, those switches have different supporting table for different flow entry which might not be compatible to the customer requirement. If the algorithm is not appropriate designed for the specific network application entry, it will cause system crashed. We plan to design the algorithms specifically for multi-table switch in order to minimize the possibility of the crash of the system and maximize the performance.
+However, the multiple flow table mechanism need more flow rules in the SDN switch and further research is needed. The mechanism uses more space in flow tables to gain more functionality. Also, the order of flow table of network functions must be fixed. As a future work, we plan to study further on the optimization for lower number of flow entries. We are still at an early stage of this approach and the full potential is yet to be revealed.
 
+
+\section*{Acknowledgment}
+This study is supported by the Ministry of Science and Technology (MOST) of Taiwan under grant numbers MOST 105-2221-E-007-083 and MOST 105-2622-8-009-008.
 
 
 \bibliographystyle{ieeetr}
 \bibliography{paper}
-
 
 
 \end{document}
