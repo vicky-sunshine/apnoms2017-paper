@@ -225,7 +225,7 @@ To implement the rate limiting for hosts, we use meter, which is defined within 
 
 \subsubsection{Rate Limitation of Applications}
 
-In this strategy, we integrated a flow classification engine to identify the flow belongs to which application.
+In this strategy, we integrated a flow classification engine \cite{che-chuan-apnoms} to identify the flow belongs to which application.
 To avoid some applications taking up a lot of bandwidth, we can limit the bandwidth for a certain application.
 We will mirror the packet to flow classification engine and identify which application belongs to.
 If we want to limit a specific application, we just add a 5-tuple rule and same meter to those packets which belong to this application.
@@ -311,7 +311,8 @@ We observed that the bandwidth of the host 2 rapidly increased to 5120 Kbps.
 
 
 \subsection{Evaluation of QoS When Application Bandwidth Is Limited}
-Our experimental environment is presented in Fig. \ref{fig:class_classifying}. In our experimental environment, we mirror all traffic from the SDN switch to application classification system and identify those flows belong to which application.
+Our experimental environment is presented in Fig. \ref{fig:class_classifying}. 
+In our experimental environment, we mirror all traffic from the SDN switch to application classification system \cite{che-chuan-apnoms} and identify those flows belong to which application.
 Then the application classification system uploaded the classification results to the database.
 Subsequently, the controller received the results from the database and updated the flow information of the applications.
 Therefore, we could use the flow information (5-tuple and classification results) to limit the application bandwidth.
