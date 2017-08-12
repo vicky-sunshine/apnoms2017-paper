@@ -9,7 +9,6 @@
 \usepackage{indentfirst}
 \usepackage{cite}
 \usepackage{url}
-\usepackage{hyperref}
 \usepackage{enumerate}
 \usepackage[flushleft]{threeparttable}
 \usepackage[super]{nth}
@@ -19,7 +18,7 @@
 
 \begin{document}
 
-\title{A Novel vCPE Framework for Enabling Virtual Network Functions with Multiple Flow Tables Architecture in SDN switches}
+\title{A Novel vCPE Framework for Enabling Virtual Network Functions with Multiple Flow Tables Architecture in SDN Switches}
 
 \author{
 \IEEEauthorblockN{
@@ -39,6 +38,18 @@ Department of Computer Science National Tsing Hua University, Hsinchu, Taiwan
 Institute of Communication Engineering National Tsing Hua University, Hsinchu, Taiwan
 }
 }
+
+% 978-1-5386-1101-2/17/$31.00 ©2017 IEEE
+\makeatletter
+\def\ps@IEEEtitlepagestyle{%
+  \def\@oddfoot{\mycopyrightnotice}%
+  \def\@evenfoot{}%
+}
+\def\mycopyrightnotice{%
+  {\hfill \footnotesize 978-1-5386-1101-2/17/\$31.00~\copyright2017 IEEE \hfill}
+}
+\makeatother
+
 
 % make the title area
 \maketitle
