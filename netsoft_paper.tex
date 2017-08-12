@@ -94,15 +94,17 @@ Nevertheless, when the NFV is deployed at network edge (SDN switch), it is very 
 \subsection{Overview of Network Functions} \label{ssec:desc_nfv_overview}
 Our network functions are designed with SDN-enabled NFV architecture concept \cite{sdn-enabled}, using the synergies between computing infrastructures (NFVs) and network infrastructures (NFVIs) \cite{etsi-nfv-terminology, etsi-nfv-infra}.
 An NFV is mainly used for addressing stateful processing and NFVI is used for stateless processing. In our architecture, we use an SDN controller as NFV and an SDN switch as NFVI.
-By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources. If we want to update our service, we are required to update only the stateful component, because the stateless component merely follows the commands from the stateful component.
+By using the advantages of this architecture, we can assign stateless or light-weight state work to the SDN switch (e.g., packet filtering and packet counting) to reduce the load on the computing resources.
+When the services are required for updating, we merely need to update the stateful component because the stateless component only follows the commands from the stateful component.
 
 
 
 
 \subsection{Service Deployment Model}
-Unlike related studies that explored the virtualization of network function in PE devices \cite{vcpe-enhance} or used service-chains in data center to achieve vCPE services \cite{ericcson-vcpe}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the architecture of the model is presented in Fig. \ref{fig:desc_service_deployment}. Because computing infrastructures involves algorithms and policies and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different network function service by subscribing to a different VNF controller through our vCPE platform.
+Unlike related studies that explored the virtualization of network function in PE devices \cite{vcpe-enhance} or used service-chains in data center to achieve vCPE services \cite{ericcson-vcpe}, we introduced a network function service deployment model based on the NetFATE (Network Function at the Edge) approach \cite{netfate}; the architecture of the model is presented in Fig. \ref{fig:desc_service_deployment}.
+Because computing infrastructures involves algorithms and policies, and the generic network devices perform only stateless processing, the customers need to simply purchase a general SDN switch for their home gateway. They can obtain a different service by subscribing to a different VNF controller through our vCPE platform.
 
-Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of the customer. An SDN switch is presented at the gateway of this domain. The customer can subscribe to our vCPE service through our dashboard. After subscription, the vCPE system creates a new Docker container that an SDN controller is run. The customer only needs to set up the gateway SDN switch to connect the SDN controller through the OpenFlow protocol; thereafter, the switch executes the service.
+Fig. \ref{fig:desc_service_deployment} illustrates the service deployment model. Each green area is a local network domain of the customer. An SDN switch is placed at the gateway of this domain. The customer can subscribe to our vCPE service through our dashboard. After subscription, the vCPE system creates a new Docker container in which an SDN controller is running. Then, the customer only needs to set up the gateway SDN switch to connect the SDN controller through the OpenFlow protocol; thereafter, the switch executes the service.
 
 \begin{figure}[!t]
 \centering
@@ -132,7 +134,7 @@ The infrastructure controller comprises a Docker management server and follows t
 The infrastructure orchestrator automates the workflows of service deployment. When a customer subscribes to our service, the infrastructure orchestrator first authenticates the customer, calls the infrastructure controller to create a container for the customer, and then updates the information in the cloud database.
 
 \subsubsection{Cloud Database}
-The cloud database is used for restoring the meta data of our vCPE services, which include each customer’s credentials, customer's container/VM settings, and virtual CPE service states.
+The cloud database is used for restoring the meta data of our vCPE services, which include each customer’s credentials, customer's container settings, and virtual CPE service states.
 
 \subsubsection{VNF Controllers}
 VNF controllers comprises an SDN controller developed using Ryu framework \cite{ryu} and a remote launcher module. Once the infrastructure controller creates the container, the remote module will initially run, waiting for requests from VNF Orchestrator. The details of an SDN controller design are presented at Section \ref{sec:mft}.
@@ -265,7 +267,7 @@ To reduce this load on the controller, we place the QoS flow table ahead of the 
 Implementing a single flow table framework is easier than implementing a multiple flow table framework; however, multiple flow table frameworks are more flexible. To verify the efficiency of the multiple flow table vCPE framework, we conducted an experiment by using the NAT and forwarding service to compare the throughput between single flow table vCPE and multiple flow table vCPE.
 
 An overview of the experimental environment is presented in Fig. \ref{fig:evaluation_nat_scenario}. The NFV controller was run on the Dell PowerEdge R630 rack server, and the EdgeCore AS5712-54X \cite{edge-core-switch} was used as the SDN switch.
-We used iPerf \cite{iperf} to generate network traffic. The iPerf server connected the public IP address with 140.114.71.176, and then the iPerf client connected to the SDN switch and was controlled by the NFV controller.
+We used iPerf to generate network traffic. The iPerf server connected the public IP address with 140.114.71.176, and then the iPerf client connected to the SDN switch and was controlled by the NFV controller.
 The NFV controller ran the NAT service, but used different frameworks, a single flow table and multiple flow table.
 
 We used iPerf to generate TCP packets and send them to the server from the client.
@@ -345,7 +347,7 @@ However, the multiple flow table mechanism need more flow rules in the SDN switc
 
 
 \section*{Acknowledgment}
-This study is supported by the Ministry of Science and Technology (MOST) of Taiwan under grant numbers MOST 105-2221-E-007-083 and MOST 105-2622-8-009-008.
+This study is supported by the Ministry of Science and Technology (MOST) of Taiwan under grant numbers MOST 105-2221-E-007-083, MOST 105-2622-8-009-008 and MOST 105-2218-E-007-029.
 
 
 \bibliographystyle{ieeetr}
